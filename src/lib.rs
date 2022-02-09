@@ -34,7 +34,11 @@ use core::slice;
 use core::str::{self, Utf8Error};
 
 /// Re-export c_char
+#[cfg(feature = "cty")]
 pub use cty::c_char;
+
+#[cfg(feature = "aya-bpf-cty")]
+pub use aya_bpf_cty::c_char;
 
 #[inline]
 unsafe fn strlen(p: *const c_char) -> usize {
@@ -1262,9 +1266,7 @@ impl CStr {
         let bytes = self.to_bytes_with_nul();
         // unsafe: This is just like [:len - 1] (but const usable), and any underflow of the `- 1`
         // is avoided by the type's guarantee that there is a trailing nul byte.
-        unsafe {
-            slice::from_raw_parts(bytes.as_ptr(), bytes.len() - 1)
-        }
+        unsafe { slice::from_raw_parts(bytes.as_ptr(), bytes.len() - 1) }
     }
 
     /// Converts this C string to a byte slice containing the trailing 0 byte.
@@ -1332,7 +1334,7 @@ impl CStr {
     /// assert_eq!(cstr.to_str(), Ok("foo"));
     /// ```
     #[cfg(not(feature = "nightly"))]
-    pub  fn to_str(&self) -> Result<&str, Utf8Error> {
+    pub fn to_str(&self) -> Result<&str, Utf8Error> {
         // N.B., when `CStr` is changed to perform the length check in `.to_bytes()`
         // instead of in `from_ptr()`, it may be worth considering if this should
         // be rewritten to do the UTF-8 check inline with the length calculation

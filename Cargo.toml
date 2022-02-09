@@ -12,12 +12,15 @@ categories = ["data-structures", "no-std"]
 edition = "2018"
 
 [dependencies]
-cty = "0.2.1"
+aya-bpf-cty = { git = "https://github.com/aya-rs/aya", branch = "main", optional = true }
+cty = { version = "0.2.1", optional = true }
 memchr = { version = "2.3.3", default-features = false }
 
 [features]
-default = ["arc", "alloc"]
+default = ["arc", "alloc", "cty"]
 alloc = []
+aya-bpf-cty = ["dep:aya-bpf-cty"]
+cty = ["dep:cty"]
 std = []
 arc = []
 nightly = []
